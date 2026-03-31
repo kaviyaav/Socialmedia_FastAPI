@@ -1,7 +1,6 @@
-# Socialmedia_FastAPI
-# Simple Social
+# MySocialmedia_FastAPI
 
-Simple Social is a lightweight social media web application built with FastAPI for the backend and Streamlit for the frontend. It allows users to register, log in, upload images or videos with captions, view a global feed, and manage their own posts. Media uploads are handled via ImageKit, supporting optional caption overlays. 
+MySocialmedia is a lightweight social media web application built with FastAPI for the backend and Streamlit for the frontend. It allows users to register, log in, upload images or videos with captions, view a global feed, and manage their own posts. Media uploads are handled via ImageKit, supporting optional caption overlays. 
 
 ## Features
 
