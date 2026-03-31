@@ -12,15 +12,15 @@ from fastapi import Depends
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 
-class Base(DeclarativeBase):
+class BaseModel(DeclarativeBase):
     pass
 
 
-class User(SQLAlchemyBaseUserTableUUID, Base):
-    posts = relationship("Post", back_populates="user")
+class User(SQLAlchemyBaseUserTableUUID, BaseModel):
+    posts = relationship("Post", back_populates="owner")
 
 
-class Post(Base):
+class Post(BaseModel):
     __tablename__ = "posts"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -31,22 +31,22 @@ class Post(Base):
     file_name = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    user = relationship("User", back_populates="posts")
+    owner = relationship("User", back_populates="posts")
 
 
 engine = create_async_engine(DATABASE_URL)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 
-async def create_db_and_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+async def initialize_database():
+    async with engine.begin() as connection:
+        await connection.run_sync(BaseModel.metadata.create_all)
 
 
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
+async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_factory() as session:
         yield session
 
 
-async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+async def get_user_db(session: AsyncSession = Depends(get_db_session)):
     yield SQLAlchemyUserDatabase(session, User)
